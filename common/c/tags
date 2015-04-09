@@ -1,0 +1,96 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+F2D	sdvbs_common.h	/^}F2D;$/;"	t	typeref:struct:__anon3
+I2D	sdvbs_common.h	/^}I2D;$/;"	t	typeref:struct:__anon1
+UI2D	sdvbs_common.h	/^}UI2D;$/;"	t	typeref:struct:__anon2
+_SDVBS_COMMON_	sdvbs_common.h	6;"	d
+arrayref	sdvbs_common.h	35;"	d
+asubsref	sdvbs_common.h	34;"	d
+calcSobel_dX	calcSobel_dX.c	/^F2D* calcSobel_dX(F2D* imageIn)$/;"	f
+calcSobel_dY	calcSobel_dY.c	/^F2D* calcSobel_dY(F2D* imageIn)$/;"	f
+data	sdvbs_common.h	/^    float data[];$/;"	m	struct:__anon3
+data	sdvbs_common.h	/^    int data[];$/;"	m	struct:__anon1
+data	sdvbs_common.h	/^    unsigned int data[];$/;"	m	struct:__anon2
+fDeepCopy	fDeepCopy.c	/^F2D* fDeepCopy(F2D* in)$/;"	f
+fDeepCopyRange	fDeepCopyRange.c	/^F2D* fDeepCopyRange(F2D* in, int startRow, int numberRows, int startCol, int numberCols)$/;"	f
+fDivide	fDivide.c	/^F2D* fDivide(F2D* a, float b)$/;"	f
+fFind3	fFind3.c	/^F2D* fFind3(F2D* in)$/;"	f
+fFreeHandle	fFreeHandle.c	/^void fFreeHandle(F2D* out)$/;"	f
+fHorzcat	fHorzcat.c	/^F2D* fHorzcat(F2D* a, F2D* b)$/;"	f
+fMallocHandle	fMallocHandle.c	/^F2D* fMallocHandle(int rows, int cols)$/;"	f
+fMdivide	fMdivide.c	/^F2D* fMdivide(F2D* a, F2D* b)$/;"	f
+fMinus	fMinus.c	/^F2D* fMinus(F2D* a, F2D* b)$/;"	f
+fMtimes	fMtimes.c	/^F2D* fMtimes(F2D* a, F2D* b)$/;"	f
+fPlus	fPlus.c	/^F2D* fPlus(F2D* a, F2D* b)$/;"	f
+fReshape	fReshape.c	/^F2D* fReshape(F2D* in, int rows, int cols)$/;"	f
+fSelfCheck	fSelfCheck.c	/^int fSelfCheck(F2D* in1, char* path, float tol)$/;"	f
+fSetArray	fSetArray.c	/^F2D* fSetArray(int rows, int cols, float val)$/;"	f
+fSort	fSort.c	/^F2D* fSort(F2D* in, int dim)$/;"	f
+fSortIndices	fSortIndices.c	/^I2D* fSortIndices(F2D* input, int dim)$/;"	f
+fSum	fSum.c	/^F2D* fSum(F2D* inMat)$/;"	f
+fSum2	fSum2.c	/^F2D* fSum2(F2D* inMat, int dir)$/;"	f
+fTimes	fTimes.c	/^F2D* fTimes(F2D* a, F2D* b)$/;"	f
+fTranspose	fTranspose.c	/^F2D* fTranspose(F2D* a)$/;"	f
+fWriteMatrix	fWriteMatrix.c	/^void fWriteMatrix(F2D* input, char* inpath)$/;"	f
+ffConv2	ffConv2.c	/^F2D* ffConv2(F2D* a, F2D* b)$/;"	f
+ffConv2_dY	ffConv2_dY.c	/^F2D* ffConv2_dY(F2D* a, F2D* b)$/;"	f
+ffDivide	ffDivide.c	/^F2D* ffDivide(F2D* a, F2D* b)$/;"	f
+ffTimes	ffTimes.c	/^F2D* ffTimes(F2D* a, float b)$/;"	f
+ffVertcat	ffVertcat.c	/^F2D* ffVertcat(F2D* matrix1, F2D* matrix2)$/;"	f
+ffiConv2	ffiConv2.c	/^F2D* ffiConv2(F2D* a, I2D* b)$/;"	f
+fiConv2	fiConv2.c	/^F2D* fiConv2(I2D* a, F2D* b)$/;"	f
+fiDeepCopy	fiDeepCopy.c	/^F2D* fiDeepCopy(I2D* in)$/;"	f
+height	sdvbs_common.h	/^    int height;$/;"	m	struct:__anon1
+height	sdvbs_common.h	/^    int height;$/;"	m	struct:__anon2
+height	sdvbs_common.h	/^    int height;$/;"	m	struct:__anon3
+horzcat	horzcat.c	/^F2D* horzcat(F2D* a, F2D* b, F2D* c)$/;"	f
+iDeepCopy	iDeepCopy.c	/^I2D* iDeepCopy(I2D* in)$/;"	f
+iDeepCopyRange	iDeepCopyRange.c	/^I2D* iDeepCopyRange(I2D* in, int startRow, int numberRows, int startCol, int numberCols)$/;"	f
+iFreeHandle	iFreeHandle.c	/^void iFreeHandle(I2D* out)$/;"	f
+iHorzcat	iHorzcat.c	/^I2D* iHorzcat(I2D* a, I2D* b)$/;"	f
+iMallocHandle	iMallocHandle.c	/^I2D* iMallocHandle(int rows, int cols)$/;"	f
+iMinus	iMinus.c	/^I2D* iMinus(I2D* a, I2D* b)$/;"	f
+iReshape	iReshape.c	/^I2D* iReshape(I2D* in, int rows, int cols)$/;"	f
+iSetArray	iSetArray.c	/^I2D* iSetArray(int rows, int cols, int val)$/;"	f
+iSort	iSort.c	/^I2D* iSort(I2D* in, int dim)$/;"	f
+iSortIndices	iSortIndices.c	/^I2D* iSortIndices(I2D* in, int dim)$/;"	f
+iTimes	iTimes.c	/^I2D* iTimes(I2D* a, I2D* b)$/;"	f
+iTranspose	iTranspose.c	/^I2D* iTranspose(I2D* a)$/;"	f
+iVertcat	iVertcat.c	/^I2D* iVertcat(I2D* matrix1, I2D* matrix2)$/;"	f
+ifDeepCopy	ifDeepCopy.c	/^I2D* ifDeepCopy(F2D* in)$/;"	f
+ifMtimes	ifMtimes.c	/^F2D* ifMtimes(I2D* a, F2D* b)$/;"	f
+iiConv2	iiConv2.c	/^I2D* iiConv2(I2D* a, I2D* b)$/;"	f
+imageBlur	imageBlur.c	/^F2D* imageBlur(I2D* imageIn)$/;"	f
+imageResize	imageResize.c	/^F2D* imageResize(F2D* imageIn)$/;"	f
+isMinus	isMinus.c	/^I2D* isMinus(I2D* a, int b)$/;"	f
+isPlus	isPlus.c	/^I2D* isPlus(I2D* a, int b)$/;"	f
+magic_timing_begin	timingUtils.h	26;"	d
+magic_timing_begin	timingUtils.h	2;"	d
+magic_timing_begin	timingUtils.h	69;"	d
+magic_timing_end	timingUtils.h	37;"	d
+magic_timing_end	timingUtils.h	6;"	d
+magic_timing_end	timingUtils.h	73;"	d
+magic_timing_report	timingUtils.h	15;"	d
+magic_timing_report	timingUtils.h	49;"	d
+magic_timing_report	timingUtils.h	77;"	d
+photonEndTiming	photonEndTiming.c	/^unsigned int * photonEndTiming()$/;"	f
+photonPrintTiming	photonPrintTiming.c	/^void photonPrintTiming(unsigned int * elapsed)$/;"	f
+photonReportTiming	photonReportTiming.c	/^unsigned int * photonReportTiming(unsigned int* startCycles,unsigned int* endCycles)$/;"	f
+photonStartTiming	photonStartTiming.c	/^unsigned int* photonStartTiming()$/;"	f
+randWrapper	randWrapper.c	/^F2D* randWrapper(int m, int n)$/;"	f
+randnWrapper	randnWrapper.c	/^F2D* randnWrapper(int m, int n)$/;"	f
+readFile	readFile.c	/^F2D* readFile(unsigned char* fileName)$/;"	f
+readImage	readImage.c	/^I2D* readImage(const char* pathName)$/;"	f
+selfCheck	selfCheck.c	/^int selfCheck(I2D* in1, char* path, int tol)$/;"	f
+subsref	sdvbs_common.h	33;"	d
+uiFreeHandle	uiFreeHandle.c	/^void uiFreeHandle(UI2D* out)$/;"	f
+uiMallocHandle	uiMallocHandle.c	/^UI2D* uiMallocHandle(int rows, int cols)$/;"	f
+uiSetArray	uiSetArray.c	/^UI2D* uiSetArray(int rows, int cols, int val)$/;"	f
+width	sdvbs_common.h	/^    int width;$/;"	m	struct:__anon1
+width	sdvbs_common.h	/^    int width;$/;"	m	struct:__anon2
+width	sdvbs_common.h	/^    int width;$/;"	m	struct:__anon3
+writeMatrix	writeMatrix.c	/^void writeMatrix(I2D* input, char* inpath)$/;"	f
