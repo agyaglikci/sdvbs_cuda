@@ -1,0 +1,81 @@
+# CUDA toolkit installation path
+CUDA_DIR = /home/komurav1/installs/cuda-3.1/cuda
+#CUDA_DIR = /home/sadve/komurav1/installs/cuda-3.1/cuda
+
+# CUDA toolkit libraries
+CUDA_LIB_DIR := $(CUDA_DIR)/lib
+ifeq ($(shell uname -m), x86_64)
+     ifeq ($(shell if test -d $(CUDA_DIR)/lib64; then echo T; else echo F; fi), T)
+     	CUDA_LIB_DIR := $(CUDA_DIR)/lib64
+     endif
+endif
+
+# CUDA SDK installation path
+#SDK_DIR = $(HOME)/NVIDIA_GPU_Computing_SDK/C
+SDK_DIR =/if10/kw5na/NVIDIA_GPU_Computing_SDK4/C
+#SDK_DIR =/if10/kw5na/NVIDIA_CUDA_Computing_SDK4/C
+
+# OPENCL
+
+# NVIDIA_DIR
+
+# OPENCL_DIR =/if10/kw5na/NVIDIA_GPU_Computing_SDK4
+# OPENCL_INC = $(OPENCL_DIR)/OpenCL/common/inc
+# OPENCL_LIB = $(OPENCL_DIR)/OpenCL/common/lib -lOpenCL
+
+# AMD_DIR
+OPENCL_DIR = /if10/kw5na/Packages/AMD-APP-SDK-v2.8-RC-lnx64
+OPENCL_INC = $(OPENCL_DIR)/include/ 
+OPENCL_LIB = $(OPENCL_DIR)/lib/x86_64/ -lOpenCL
+#ifeq ($(shell uname -m), x86_64)
+#     ifeq ($(shell if test -d $(OPENCL_DIR)/lib/x86_64/; then echo T; else echo F; fi), T)
+#     	OPENCL_LIB = $(OPENCL_DIR)/lib/x86_64/
+#     endif
+#endif
+
+cuda-run: cuda-compile
+	@echo -e "CUDA Data set, GPU exec\t\t- $(INPUT)" 
+	#last two inputs must be 'use_gpu' and 'transfer_gpu'
+	@./$(BMARK)$(EXE) $(DATA_DIR) $(CUDA_RESULT) 1 1 | tee $(TIMING_DIR)/cuda_$(INPUT).txt
+
+cuda-cpu-run: cuda-compile
+	@echo -e "CUDA Data set, CPU exec\t\t- $(INPUT)" 
+	#last two inputs must be 'use_gpu' and 'transfer_gpu'
+	@./$(BMARK)$(EXE) $(DATA_DIR) $(CUDA_RESULT) 0 0 | tee $(TIMING_DIR)/cuda_cpu_$(INPUT).txt
+
+cuda-cpu-transfer-run: cuda-compile
+	@echo -e "CUDA Data set, CPU exec, GPU transfer\t\t- $(INPUT)" 
+	#last two inputs must be 'use_gpu' and 'transfer_gpu'
+	@./$(BMARK)$(EXE) $(DATA_DIR) $(CUDA_RESULT) 0 1 | tee $(TIMING_DIR)/cuda_cput_$(INPUT).txt
+
+#compile-cuda: $(C_SRC)
+#	@echo 
+#	@echo -e "Benchmark\t\t- $(BMARK)"
+#	@$(COMPILE_C) $(COMMON_SRC) $(C_SRC) -o $(BMARK)$(EXE)
+
+
+NVCC := $(CUDA_DIR)/bin/nvcc
+CUDA_INCLUDE := $(CUDA_DIR)/include
+
+NVCCFLAGS += -arch=sm_20
+
+
+CUDA_OBJS := $(COMMON_SRC:.c=.o) $(CUDA_C_SRC:.c=.o) $(CUDA_CU_SRC:.cu=.cu.o)
+
+#run gpu cuda version of benchmark
+cuda-compile: $(CUDA_OBJS)
+	@echo -e "CUDA Benchmark\t\t- $(BMARK)"
+	@$(NVCC) $(CFLAGS) $(NVCCFLAGS) $(CUDA_OBJS) -o $(BMARK)$(EXE) -L$(CUDA_LIB_DIR)
+
+
+%.o : %.c
+	@echo $(CUDA_SRC_DIR)
+	@echo $@
+	@$(NVCC) $(CFLAGS) $(NVCCFLAGS) $(CUDA_INCLUDES) -o $@ -c $<
+
+%.cu.o:  %.cu
+	@$(NVCC) $(CFLAGS) $(NVCCFLAGS) $(CUDA_INCLUDES) -o $@ -c $<
+
+cuclean:
+	@rm -rf $(CUDA_SRC_DIR)/*.o
+

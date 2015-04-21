@@ -44,15 +44,24 @@ C_DIR=$(BMARK_DIR)/src/c
 DATA_DIR=$(BMARK_DIR)/data/$(INPUT)
 C_RESULT=$(M_RESULT)
 
+# CUDA stuff
+
+CUDA_SRC_DIR=$(BMARK_DIR)/src/cuda
+DATA_DIR=$(BMARK_DIR)/data/$(INPUT)
+CUDA_RESULT=$(M_RESULT)
+
 # Source files for C and Common folders
 
 C_SRC := $(wildcard $(C_DIR)/*.c)
+CUDA_C_SRC := $(wildcard $(CUDA_SRC_DIR)/*.c) 
+CUDA_CU_SRC := $(wildcard $(CUDA_SRC_DIR)/*.cu) 
 COMMON_SRC := $(wildcard $(COMMON_DIR)/*.c)
 
 # RULES
 
 EXE =
 INCLUDES = -I$(COMMON_DIR) -I$(C_DIR)
+CUDA_INCLUDES = -I$(COMMON_DIR) -I$(CUDA_SRC_DIR) -I$(CUDA_DIR)/include
 COMPILE_C = $(CC) $(CFLAGS) -lm -O2 $(INCLUDES)
 #COMPILE_C = $(CC) $(CFLAGS) -DGENERATE_OUTPUT -lm -O2 $(INCLUDES)
 COMPILE_G = $(CC) $(CFLAGS) -g -lm $(INCLUDES)
@@ -73,6 +82,7 @@ profile: compile-prof
 	@./$(BMARK)$(EXE) $(DATA_DIR) $(C_RESULT)
 	@gprof $(BMARK)$(EXE)
 	
+C_OBJS := $(COMMON_SRC:.c=.o) $(C_SRC:.c=.o)
 
 compile: $(C_SRC)
 	@echo 
@@ -94,11 +104,15 @@ mcc-run:
 	@echo Generating a C standalone application
 	cd $(M_DIR); $(MATLAB_PATH) -nosplash -nodesktop -r "mcc -m -v script_run_profile -d $(M_RESULT); quit"
 	
-all: c-run matlab-run mcc-run
+#all: c-run matlab-run mcc-run cuda-run
+all: c-run cudall
 
-clean:
+cudall: cuda-run cuda-cpu-run cuda-cpu-transfer-run
+
+clean: cuclean
 	@-rm $(BMARK)
 
+include $(MAKEFILE_COMMON_DIR)/Makefile.cuda
 
 
 
