@@ -56,6 +56,7 @@ C_SRC := $(wildcard $(C_DIR)/*.c)
 CUDA_C_SRC := $(wildcard $(CUDA_SRC_DIR)/*.c) 
 CUDA_CU_SRC := $(wildcard $(CUDA_SRC_DIR)/*.cu) 
 COMMON_SRC := $(wildcard $(COMMON_DIR)/*.c)
+COMMON_CU_SRC := $(wildcard $(COMMON_DIR)/*.cu)
 
 # RULES
 

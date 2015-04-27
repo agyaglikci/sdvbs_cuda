@@ -8,7 +8,7 @@
 #include <cuda.h>
 
 void kernelWrapper();
-
+/*
 __global__ void Kernel( int i)
 {
   //do stuff here
@@ -24,3 +24,4 @@ void kernelWrapper(bool use_gpu, bool gpu_transfer )
   Kernel<<< grid, threads, 0 >>>(0);
 
 }
+*/

@@ -5,9 +5,9 @@ Author: Sravanthi Kota Venkata
 extern "C" {
 #include <stdio.h>
 #include <stdlib.h>
-#include "disparity.h"
 //#include "bfs.cu"
 }
+#include "disparity.h"
 
 void kernelWrapper(bool use_gpu, bool gpu_transfer);
 
@@ -39,23 +39,8 @@ int main(int argc, char* argv[])
 
 
     /*** ADD THIS TO EXISTING BENCHMARKS *****/
-    use_gpu = argv[3];
-    gpu_transfer = argv[4];
-
-
-    if(gpu_transfer) {
-      // allocate device memory
-      // Copy necessary data to device memory
-    }
-    
-    if(use_gpu) {
-      kernelWrapper(use_gpu, gpu_transfer);
-    }
-
-    if(gpu_transfer) {
-      // Copy results back
-      // free device memory
-    }
+    use_gpu = atoi(argv[3]);
+    gpu_transfer = atoi(argv[4]);
     /*****************************************/
     
     imleft = readImage(im1);
@@ -78,7 +63,7 @@ int main(int argc, char* argv[])
 #endif
 
     start = photonStartTiming();
-    retDisparity = getDisparity(imleft, imright, WIN_SZ, SHIFT);
+    retDisparity = getDisparity(imleft, imright, WIN_SZ, SHIFT, use_gpu, gpu_transfer);
     endC = photonEndTiming();
 
     printf("Input size\t\t- (%dx%d)\n", rows, cols);
