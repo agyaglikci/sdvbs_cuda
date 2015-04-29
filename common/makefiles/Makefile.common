@@ -108,7 +108,7 @@ mcc-run:
 #all: c-run matlab-run mcc-run cuda-run
 all: c-run cudall
 
-cudall: cuda-run cuda-cpu-run cuda-cpu-transfer-run
+cudall: cuda-cpu-run cuda-cpu-transfer-run cuda-run
 
 clean: cuclean
 	@-rm $(BMARK)

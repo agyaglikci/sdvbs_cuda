@@ -23,9 +23,25 @@ void correlateSAD_2D(I2D* Ileft, I2D* Iright, I2D* Iright_moved, int win_sz, int
         asubsref(Iright_moved,i) = 0;
     
     padarray4(Iright, range, -1, Iright_moved);
+//#ifdef DEBUG
+//    printf("cpu padarray:\n");
+//    printSome(Iright_moved);
+//#endif
+//#ifdef DEBUG
+//    printf("cpu Ileft:\n");
+//    printSome(Ileft);
+//#endif
    
     computeSAD(Ileft, Iright_moved, SAD);
+//#ifdef DEBUG
+//    printf("cpu computeSAD:\n");
+//    printSome(SAD);
+//#endif
     integralImage2D2D(SAD, integralImg);
+//#ifdef DEBUG
+//    printf("cpu integralImg:\n");
+//    printSome(integralImg);
+//#endif
     finalSAD(integralImg, win_sz, retSAD);
 
     iFreeHandle(range);    

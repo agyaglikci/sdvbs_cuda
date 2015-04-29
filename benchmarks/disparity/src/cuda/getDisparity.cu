@@ -5,7 +5,7 @@ Author: Sravanthi Kota Venkata
 #include <stdio.h>
 #include <stdlib.h>
 #include "disparity.h"
-//#include "cuda_disparity.cu"
+#include "cuda_disparity.cu"
 
 /*
 #define GPUERRCHK { gpuAssert((cudaGetLastError()), __FILE__, __LINE__); }
@@ -21,6 +21,7 @@ inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort=t
 
 I2D* getDisparity(I2D* Ileft, I2D* Iright, int win_sz, int max_shift, int use_gpu, int gpu_transfer)
 {
+    unsigned int* start_transfer = cudaStartPhase();
     I2D* retDisp;
     int nr, nc, k;
     I2D *halfWin;
@@ -54,15 +55,16 @@ I2D* getDisparity(I2D* Ileft, I2D* Iright, int win_sz, int max_shift, int use_gp
     
     rows = IleftPadded->height;
     cols = IleftPadded->width;
-    SAD = fSetArray(rows, cols,255);
-    integralImg = fSetArray(rows, cols,0);
-    retSAD = fMallocHandle(rows-win_sz, cols-win_sz);
-    Iright_moved = iSetArray(rows, cols, 0);
+    if(true){//!use_gpu) {
+      SAD = fSetArray(rows, cols,255);
+      integralImg = fSetArray(rows, cols,0);
+      retSAD = fMallocHandle(rows-win_sz, cols-win_sz);
+      Iright_moved = iSetArray(rows, cols, 0);
+    }
 
+    int phasei=0;
     if(gpu_transfer) 
     {
-      unsigned int* start_transfer = cudaStartTransfer();
-      printf("doing gpu transfer\n");
       d_IleftPadded = iMallocAndCopy(IleftPadded);
       d_IrightPadded = iMallocAndCopy(IrightPadded);
       d_Iright_moved = iMallocAndCopy(Iright_moved);
@@ -71,38 +73,83 @@ I2D* getDisparity(I2D* Ileft, I2D* Iright, int win_sz, int max_shift, int use_gp
       d_retSAD = fMallocAndCopy(retSAD);
       d_minSAD = fMallocAndCopy(minSAD);
       d_retDisp = iMallocAndCopy(retDisp);
+      //d_Iright_moved = iMallocCudaArray(rows, cols);
+      //d_SAD = fMallocCudaArray(rows, cols);
+      //d_integralImg = fMallocCudaArray(rows, cols);
+      //d_retSAD = fMallocCudaArray(nr, nc);
+      //d_minSAD = fMallocCudaArray(nr, nc);
+      //d_retDisp = iMallocCudaArray(nr, nc);
       GPUERRCHK;
-      cudaEndTransfer(start_transfer);
     }
-    
+    cudaEndPhase(start_transfer, phasei++);
+
+    start_transfer = cudaStartPhase();
     for( k=0; k<max_shift; k++)
     {    
         if(use_gpu) 
         {
-          cuda_correlateSAD_2D(d_IleftPadded, d_IrightPadded, d_Iright_moved, win_sz, k, nr, nc, SAD, integralImg, retSAD);
-          cuda_findDisparity(d_retSAD, d_minSAD, d_retDisp, k, nr, nc);
+          //cuda_correlateSAD_2D(d_IleftPadded, d_IrightPadded, d_Iright_moved, win_sz, k, nr, nc, d_SAD, d_integralImg, d_retSAD);
+          cuda_correlateSAD_2D(d_IleftPadded, d_IrightPadded, d_Iright_moved, win_sz, k, rows, cols, d_SAD, d_integralImg, d_retSAD);
+          GPUERRCHK;
+//#ifdef DEBUG
+//          fCopyFromGPU(retSAD, d_retSAD);
+//          printf("gpu correlateSAD:\n");
+//          for(int el=0; el<10; el++) 
+//          {
+//            printf("%f, ", subsref(retSAD, el, el));
+//          }
+//          printf("\n");
+//#endif
+          dim3  threads(64, 4, 1);
+          dim3 griddim(1,1,1);
+          griddim.x = nc/threads.x + ((nc % threads.x == 0) ? 0:1);
+          griddim.y = nr/threads.y + ((nr % threads.y == 0) ? 0:1);
+          findDisparity_kernel<<<griddim, threads>>>(d_retSAD, d_minSAD, d_retDisp, k, nr, nc);
+          iCopyFromGPU(retDisp, d_retDisp);
+//#ifdef DEBUG
+//          printf("gpu retDisp:\n");
+//          printSome(retDisp);
+//#endif
           GPUERRCHK;
         }
         else
         {
           correlateSAD_2D(IleftPadded, IrightPadded, Iright_moved, win_sz, k, SAD, integralImg, retSAD);
+//#ifdef DEBUG
+//          printf("cpu correlateSAD:\n");
+//          printSome(retSAD);
+//#endif
           findDisparity(retSAD, minSAD, retDisp, k, nr, nc);
+//#ifdef DEBUG
+//          printf("cpu retDisp:\n");
+//          printSome(retDisp);
+//#endif
         }
+        //printf("it%d\n", k);
+        
     }
-    //printf("done with kernel\n");
+    cudaEndPhase(start_transfer, phasei++);
+    start_transfer = cudaStartPhase();
+//#ifdef DEBUG
+//    printf("retDisp:\n");
+//    printSome(retDisp);
+//    printf("retSAD:\n");
+//    printSome(retSAD);
+//#endif
     
-    fFreeHandle(retSAD);
+    if(!use_gpu) {
+      fFreeHandle(retSAD);
+      fFreeHandle(SAD);
+      fFreeHandle(integralImg);
+      iFreeHandle(Iright_moved);
+    }
     fFreeHandle(minSAD);
-    fFreeHandle(SAD);
-    fFreeHandle(integralImg);
     iFreeHandle(halfWin);
     iFreeHandle(IrightPadded);
     iFreeHandle(IleftPadded);
-    iFreeHandle(Iright_moved);
      
     if(gpu_transfer) 
     {
-      unsigned int* start_transfer = cudaStartTransfer();
       cudaFree(d_retSAD);
       cudaFree(d_minSAD);
       cudaFree(d_SAD);
@@ -114,8 +161,8 @@ I2D* getDisparity(I2D* Ileft, I2D* Iright, int win_sz, int max_shift, int use_gp
         iCopyFromGPU(retDisp, d_retDisp);
       }
       GPUERRCHK;
-      cudaEndTransfer(start_transfer);
     }
+    cudaEndPhase(start_transfer, phasei++);
     return retDisp;
 }
 

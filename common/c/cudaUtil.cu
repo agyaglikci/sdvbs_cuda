@@ -24,7 +24,7 @@ F2D* fMallocCudaArray(int nrows, int ncols)
   return out;
 }
 
-F2D* fMallocCudaArray_copy(F2D* copy)
+F2D* fMallocCudaArray(F2D* copy)
 {
   int nrows = copy->height;
   int ncols = copy->width;
@@ -43,6 +43,7 @@ cudaError_t fCopyFromGPU(F2D* host, F2D* device)
 {
   int rows = host->height;
   int cols = host->width;
+  //printf("copying %d bytes\n", sizeof(F2D)+sizeof(float)*rows*cols);
   return cudaMemcpy( host, device, sizeof(F2D)+sizeof(float)*rows*cols, cudaMemcpyDeviceToHost);
 }
 
@@ -59,7 +60,7 @@ F2D* fMallocAndCopy(F2D* host_array)
   return device_array;
 }
 
-cudaError_t fCopyAndFree(F2D* device_array, F2D* host_array)
+cudaError_t fCopyAndFree(F2D* host_array, F2D* device_array)
 {
   int rows = host_array->height;
   int cols = host_array->width;
@@ -79,7 +80,7 @@ I2D* iMallocCudaArray(int nrows, int ncols)
   //return (I2D*) ((void*)(out));
 }
 
-I2D* iMallocCudaArray_copy(I2D* copy)
+I2D* iMallocCudaArray(I2D* copy)
 {
   int nrows = copy->height;
   int ncols = copy->width;
@@ -107,7 +108,7 @@ cudaError_t iCopyFromGPU(I2D* host, I2D* device)
 
 I2D*  iMallocAndCopy(I2D* host_array)
 {
-  I2D* device_array = iMallocCudaArray_copy(host_array);
+  I2D* device_array = iMallocCudaArray(host_array);
   iCopyToGPU(host_array, device_array);
   GPUERRCHK;
   //if(cudaSuccess != iCopyToGPU(host_array, device_array)) {
@@ -116,7 +117,7 @@ I2D*  iMallocAndCopy(I2D* host_array)
   return device_array;
 }
 
-cudaError_t iCopyAndFree(I2D* device_array, I2D* host_array)
+cudaError_t iCopyAndFree(I2D* host_array, I2D* device_array)
 {
   int rows = host_array->height;
   int cols = host_array->width;
@@ -145,13 +146,20 @@ unsigned int* cudaStartTransfer()
   unsigned int* start=photonStartTiming();
 }
 
-void cudaEndTransfer(unsigned int* start)
+unsigned int* cudaStartPhase()
+{
+  unsigned int* start=photonStartTiming();
+}
+
+unsigned int cudaEndPhase(unsigned int* start, int phase)
 {
   unsigned int* end=photonEndTiming();
   unsigned int* elapsed=photonReportTiming(start, end);
   if(elapsed[1] == 0)
-    printf("Transfer cycles\t\t- %u\n\n", elapsed[0]);
+    printf("Phase %d cycles\t\t- %u\n\n", phase, elapsed[0]);
   else
-    printf("Transfer cycles\t\t- %u%u\n\n", elapsed[1], elapsed[0]);
+    printf("Phase %d cycles\t\t- %u%u\n\n", phase, elapsed[0], elapsed[1]);
+  free(start);
+  free(end);
 }
 

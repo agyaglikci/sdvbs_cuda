@@ -34,22 +34,25 @@ OPENCL_LIB = $(OPENCL_DIR)/lib/x86_64/ -lOpenCL
 #endif
 
 cuda-run: cuda-compile
-	@echo -e "CUDA Data set, GPU exec\t\t- $(INPUT)" 
+	@echo -e "Data set\t\t- $(INPUT)" 
+	@echo -e "CUDA GPU exec"
 #	last two inputs must be 'use_gpu' and 'transfer_gpu'
-	@./$(BMARK)$(EXE) $(DATA_DIR) $(CUDA_RESULT) 1 1 #| tee $(TIMING_DIR)/cuda_gpu_$(INPUT).txt
-	cat $(TIMING_DIR)/cuda_gpu_$(INPUT).txt
+	@./$(BMARK)$(EXE) $(DATA_DIR) $(CUDA_RESULT) 1 1 | tee $(TIMING_DIR)/cuda_gpu_$(INPUT).txt
+#	cat $(TIMING_DIR)/cuda_gpu_$(INPUT).txt
 
 cuda-cpu-run: cuda-compile
-	@echo -e "CUDA Data set, CPU exec\t\t- $(INPUT)" 
+	@echo -e "Data set\t\t- $(INPUT)" 
+	@echo -e "CUDA CPU exec"
 #	last two inputs must be 'use_gpu' and 'transfer_gpu'
-	@./$(BMARK)$(EXE) $(DATA_DIR) $(CUDA_RESULT) 0 0 #| tee $(TIMING_DIR)/cuda_cpu_$(INPUT).txt
-	cat $(TIMING_DIR)/cuda_cpu_$(INPUT).txt
+	@./$(BMARK)$(EXE) $(DATA_DIR) $(CUDA_RESULT) 0 0 | tee $(TIMING_DIR)/cuda_cpu_$(INPUT).txt
+#	cat $(TIMING_DIR)/cuda_cpu_$(INPUT).txt
 
 cuda-cpu-transfer-run: cuda-compile
-	@echo -e "CUDA Data set, CPU exec, GPU transfer\t\t- $(INPUT)" 
+	@echo -e "Data set\t\t- $(INPUT)" 
+	@echo -e "CUDA CPU exe + GPU transfer exec"
 #	last two inputs must be 'use_gpu' and 'transfer_gpu'
-	@./$(BMARK)$(EXE) $(DATA_DIR) $(CUDA_RESULT) 0 1 #| tee $(TIMING_DIR)/cuda_cput_$(INPUT).txt
-	cat $(TIMING_DIR)/cuda_cput_$(INPUT).txt
+	@./$(BMARK)$(EXE) $(DATA_DIR) $(CUDA_RESULT) 0 1 | tee $(TIMING_DIR)/cuda_cput_$(INPUT).txt
+#	cat $(TIMING_DIR)/cuda_cput_$(INPUT).txt
 
 #compile-cuda: $(C_SRC)
 #	@echo 
@@ -70,18 +73,18 @@ CUDA_OBJS := $(COMMON_SRC:.c=.o) $(COMMON_CU_SRC:.cu=.cu.o) $(CUDA_C_SRC:.c=.o) 
 #run gpu cuda version of benchmark
 cuda-compile: $(CUDA_OBJS)
 	@echo -e "CUDA Benchmark\t\t- $(BMARK)"
-	$(NVCC) $(CFLAGS) $(DEBUG_FLAG) $(NVCCFLAGS) $(CUDA_OBJS) -o $(BMARK)$(EXE) -L$(CUDA_LIB_DIR)
+	@$(NVCC) $(CFLAGS) $(DEBUG_FLAG) $(NVCCFLAGS) $(CUDA_OBJS) -o $(BMARK)$(EXE) -L$(CUDA_LIB_DIR)
 #	$(CC) $(CFLAGS) $(CUDA_OBJS) -o $(BMARK)$(EXE) -L$(CUDA_LIB_DIR)
 
 
 %.o : %.c
 	@echo $(CUDA_SRC_DIR)
 	@echo $@
-	$(NVCC) $(CFLAGS) $(DEBUG_FLAG)  $(NVCCFLAGS) $(CUDA_INCLUDES) -o $@ -c $<
+	@$(NVCC) $(CFLAGS) $(DEBUG_FLAG)  $(NVCCFLAGS) $(CUDA_INCLUDES) -o $@ -c $<
 #	$(CC) $(CFLAGS)  $(CUDA_INCLUDES) -o $@ -c $<
 
 %.cu.o:  %.cu
-	$(NVCC) $(CFLAGS) $(DEBUG_FLAG) $(NVCCFLAGS) $(CUDA_INCLUDES) -o $@ -c $<
+	@$(NVCC) $(CFLAGS) $(DEBUG_FLAG) $(NVCCFLAGS) $(CUDA_INCLUDES) -o $@ -c $<
 
 cuclean:
 	@rm -rf $(CUDA_SRC_DIR)/*.o
