@@ -62,10 +62,10 @@ F2D* fMallocAndCopy(F2D* host_array)
 
 cudaError_t fCopyAndFree(F2D* host_array, F2D* device_array)
 {
-  int rows = host_array->height;
-  int cols = host_array->width;
+  //int rows = host_array->height;
+  //int cols = host_array->width;
   fCopyFromGPU(host_array, device_array);
-  cudaFree(device_array);
+  return cudaFree(device_array);
 }
 
 I2D* iMallocCudaArray(int nrows, int ncols)
@@ -101,7 +101,7 @@ cudaError_t iCopyFromGPU(I2D* host, I2D* device)
 {
   int rows = host->height;
   int cols = host->width;
-  int numbytes = sizeof(I2D)+sizeof(int)*rows*cols;
+  //int numbytes = sizeof(I2D)+sizeof(int)*rows*cols;
   //printf("CopyFromGPU h:0x%x d:0x%x numbytes:%d\n", host, device, numbytes);
   return cudaMemcpy( host, device, sizeof(I2D)+sizeof(int)*rows*cols, cudaMemcpyDeviceToHost);
 }
@@ -119,8 +119,8 @@ I2D*  iMallocAndCopy(I2D* host_array)
 
 cudaError_t iCopyAndFree(I2D* host_array, I2D* device_array)
 {
-  int rows = host_array->height;
-  int cols = host_array->width;
+  //int rows = host_array->height;
+  //int cols = host_array->width;
   iCopyFromGPU(host_array, device_array);
   return cudaFree(device_array);
 }
@@ -131,7 +131,7 @@ __global__ void Kernel( int i)
 }
 
 
-void kernelWrapper(bool use_gpu, bool gpu_transfer ) 
+void kernelWrapper(bool use_gpu, bool gpu_transfer )
 {
 	// setup execution parameters
 	dim3  grid( 1, 1, 1);
@@ -144,11 +144,13 @@ void kernelWrapper(bool use_gpu, bool gpu_transfer )
 unsigned int* cudaStartTransfer()
 {
   unsigned int* start=photonStartTiming();
+  return start;
 }
 
 unsigned int* cudaStartPhase()
 {
   unsigned int* start=photonStartTiming();
+  return start;
 }
 
 unsigned int cudaEndPhase(unsigned int* start, int phase)
@@ -161,5 +163,6 @@ unsigned int cudaEndPhase(unsigned int* start, int phase)
     printf("Phase %d cycles\t\t- %u%u\n\n", phase, elapsed[0], elapsed[1]);
   free(start);
   free(end);
+  return 0;
 }
 

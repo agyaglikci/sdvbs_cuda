@@ -1,14 +1,14 @@
 # CUDA toolkit installation path
-CUDA_DIR = /home/komurav1/installs/cuda-3.1/cuda
+CUDA_DIR = /usr/local/cuda-7.0
 #CUDA_DIR = /home/sadve/komurav1/installs/cuda-3.1/cuda
 
 # CUDA toolkit libraries
-CUDA_LIB_DIR := $(CUDA_DIR)/lib
-ifeq ($(shell uname -m), x86_64)
-     ifeq ($(shell if test -d $(CUDA_DIR)/lib64; then echo T; else echo F; fi), T)
-     	CUDA_LIB_DIR := $(CUDA_DIR)/lib64
-     endif
-endif
+CUDA_LIB_DIR := $(CUDA_DIR)/lib64
+#ifeq ($(shell uname -m), x86_64)
+#     ifeq ($(shell if test -d $(CUDA_DIR)/lib64; then echo T; else echo F; fi), T)
+#     	CUDA_LIB_DIR := $(CUDA_DIR)/lib64
+#     endif
+#endif
 
 # CUDA SDK installation path
 #SDK_DIR = $(HOME)/NVIDIA_GPU_Computing_SDK/C
@@ -25,7 +25,7 @@ SDK_DIR =/if10/kw5na/NVIDIA_GPU_Computing_SDK4/C
 
 # AMD_DIR
 OPENCL_DIR = /if10/kw5na/Packages/AMD-APP-SDK-v2.8-RC-lnx64
-OPENCL_INC = $(OPENCL_DIR)/include/ 
+OPENCL_INC = $(OPENCL_DIR)/include/
 OPENCL_LIB = $(OPENCL_DIR)/lib/x86_64/ -lOpenCL
 #ifeq ($(shell uname -m), x86_64)
 #     ifeq ($(shell if test -d $(OPENCL_DIR)/lib/x86_64/; then echo T; else echo F; fi), T)
@@ -34,28 +34,28 @@ OPENCL_LIB = $(OPENCL_DIR)/lib/x86_64/ -lOpenCL
 #endif
 
 cuda-run: cuda-compile
-	@echo -e "Data set\t\t- $(INPUT)" 
+	@echo -e "Data set\t\t- $(INPUT)"
 	@echo -e "CUDA GPU exec"
 #	last two inputs must be 'use_gpu' and 'transfer_gpu'
 	@./$(BMARK)$(EXE) $(DATA_DIR) $(CUDA_RESULT) 1 1 | tee $(TIMING_DIR)/cuda_gpu_$(INPUT).txt
 #	cat $(TIMING_DIR)/cuda_gpu_$(INPUT).txt
 
 cuda-cpu-run: cuda-compile
-	@echo -e "Data set\t\t- $(INPUT)" 
+	@echo -e "Data set\t\t- $(INPUT)"
 	@echo -e "CUDA CPU exec"
 #	last two inputs must be 'use_gpu' and 'transfer_gpu'
 	@./$(BMARK)$(EXE) $(DATA_DIR) $(CUDA_RESULT) 0 0 | tee $(TIMING_DIR)/cuda_cpu_$(INPUT).txt
 #	cat $(TIMING_DIR)/cuda_cpu_$(INPUT).txt
 
 cuda-cpu-transfer-run: cuda-compile
-	@echo -e "Data set\t\t- $(INPUT)" 
+	@echo -e "Data set\t\t- $(INPUT)"
 	@echo -e "CUDA CPU exe + GPU transfer exec"
 #	last two inputs must be 'use_gpu' and 'transfer_gpu'
 	@./$(BMARK)$(EXE) $(DATA_DIR) $(CUDA_RESULT) 0 1 | tee $(TIMING_DIR)/cuda_cput_$(INPUT).txt
 #	cat $(TIMING_DIR)/cuda_cput_$(INPUT).txt
 
 #compile-cuda: $(C_SRC)
-#	@echo 
+#	@echo
 #	@echo -e "Benchmark\t\t- $(BMARK)"
 #	@$(COMPILE_C) $(COMMON_SRC) $(C_SRC) -o $(BMARK)$(EXE)
 

@@ -5,13 +5,13 @@ Author: Sravanthi Kota Venkata
 #include <stdio.h>
 #include <stdlib.h>
 #include "disparity.h"
-#include "cuda_disparity.cu"
+#include "cuda_disparity.h"
 
 /*
 #define GPUERRCHK { gpuAssert((cudaGetLastError()), __FILE__, __LINE__); }
 inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort=true)
 {
-   if (code != cudaSuccess) 
+   if (code != cudaSuccess)
    {
       fprintf(stderr,"GPUassert: %s %s %d\n", cudaGetErrorString(code), file, line);
       if (abort) exit(code);
@@ -32,12 +32,12 @@ I2D* getDisparity(I2D* Ileft, I2D* Iright, int win_sz, int max_shift, int use_gp
     I2D* d_retDisp;
     F2D *d_retSAD, *d_minSAD, *d_SAD, *d_integralImg;
     I2D* d_IrightPadded, *d_IleftPadded, *d_Iright_moved;
-    
+
     nr = Ileft->height;
     nc = Ileft->width;
     half_win_sz=win_sz/2;
-    
-    
+
+
     minSAD = fSetArray(nr, nc, 255.0*255.0);
     retDisp = iSetArray(nr, nc,max_shift);
     halfWin = iSetArray(1,2,half_win_sz);
@@ -52,7 +52,7 @@ I2D* getDisparity(I2D* Ileft, I2D* Iright, int win_sz, int max_shift, int use_gp
             IleftPadded = Ileft;
             IrightPadded = Iright;
         }
-    
+
     rows = IleftPadded->height;
     cols = IleftPadded->width;
     if(true){//!use_gpu) {
@@ -63,7 +63,7 @@ I2D* getDisparity(I2D* Ileft, I2D* Iright, int win_sz, int max_shift, int use_gp
     }
 
     int phasei=0;
-    if(gpu_transfer) 
+    if(gpu_transfer)
     {
       d_IleftPadded = iMallocAndCopy(IleftPadded);
       d_IrightPadded = iMallocAndCopy(IrightPadded);
@@ -85,8 +85,8 @@ I2D* getDisparity(I2D* Ileft, I2D* Iright, int win_sz, int max_shift, int use_gp
 
     start_transfer = cudaStartPhase();
     for( k=0; k<max_shift; k++)
-    {    
-        if(use_gpu) 
+    {
+        if(use_gpu)
         {
           //cuda_correlateSAD_2D(d_IleftPadded, d_IrightPadded, d_Iright_moved, win_sz, k, nr, nc, d_SAD, d_integralImg, d_retSAD);
           cuda_correlateSAD_2D(d_IleftPadded, d_IrightPadded, d_Iright_moved, win_sz, k, rows, cols, d_SAD, d_integralImg, d_retSAD);
@@ -94,7 +94,7 @@ I2D* getDisparity(I2D* Ileft, I2D* Iright, int win_sz, int max_shift, int use_gp
 //#ifdef DEBUG
 //          fCopyFromGPU(retSAD, d_retSAD);
 //          printf("gpu correlateSAD:\n");
-//          for(int el=0; el<10; el++) 
+//          for(int el=0; el<10; el++)
 //          {
 //            printf("%f, ", subsref(retSAD, el, el));
 //          }
@@ -126,7 +126,7 @@ I2D* getDisparity(I2D* Ileft, I2D* Iright, int win_sz, int max_shift, int use_gp
 //#endif
         }
         //printf("it%d\n", k);
-        
+
     }
     cudaEndPhase(start_transfer, phasei++);
     start_transfer = cudaStartPhase();
@@ -136,7 +136,7 @@ I2D* getDisparity(I2D* Ileft, I2D* Iright, int win_sz, int max_shift, int use_gp
 //    printf("retSAD:\n");
 //    printSome(retSAD);
 //#endif
-    
+
     if(!use_gpu) {
       fFreeHandle(retSAD);
       fFreeHandle(SAD);
@@ -147,8 +147,8 @@ I2D* getDisparity(I2D* Ileft, I2D* Iright, int win_sz, int max_shift, int use_gp
     iFreeHandle(halfWin);
     iFreeHandle(IrightPadded);
     iFreeHandle(IleftPadded);
-     
-    if(gpu_transfer) 
+
+    if(gpu_transfer)
     {
       cudaFree(d_retSAD);
       cudaFree(d_minSAD);

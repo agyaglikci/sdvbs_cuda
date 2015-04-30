@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "disparity.h"
-#include "cuda_disparity.cu"
+#include "cuda_disparity.h"
 
-void cuda_correlateSAD_2D(I2D* Ileft, I2D* Iright, I2D* Iright_moved, int win_sz, int disparity, int rows, int cols, F2D* SAD, F2D* integralImg, F2D* retSAD) 
+void cuda_correlateSAD_2D(I2D* Ileft, I2D* Iright, I2D* Iright_moved, int win_sz, int disparity, int rows, int cols, F2D* SAD, F2D* integralImg, F2D* retSAD)
 {
-    
+
     int vborder = 0;
     int hborder = disparity;
 

@@ -14,7 +14,7 @@
 inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort=true)
 {
    //printf("gpuAsserting\n");
-   if (code != cudaSuccess) 
+   if (code != cudaSuccess)
    {
       fprintf(stderr,"GPUassert: %s %s %d\n", cudaGetErrorString(code), file, line);
       if (abort) exit(code);
@@ -29,7 +29,7 @@ inline void printSome(F2D* array)
   printf("\n");
 }
 
-inline void printSome(I2D* array) 
+inline void printSome(I2D* array)
 {
   for(int i=0; i<10; i++) {
     printf("%d, ", asubsref(array, i));
@@ -46,7 +46,7 @@ inline void compareArrays(F2D* array1, F2D* array2)
     {
       float v1 = subsref(array1,y,x);
       float v2 = subsref(array2,y,x);
-      if(v1!=v2) 
+      if(v1!=v2)
       {
         printf("mismatch at %d,%d: %f != %f\n", x, y, v1, v2);
         return;
@@ -64,7 +64,7 @@ inline void compareArrays(I2D* array1, I2D* array2)
     {
       int v1 = subsref(array1,y,x);
       int v2 = subsref(array2,y,x);
-      if(v1!=v2) 
+      if(v1!=v2)
       {
         printf("mismatch at %d,%d: %d != %d\n", x, y, v1, v2);
         return;
@@ -91,6 +91,6 @@ cudaError_t iCopyAndFree(I2D* host_array, I2D* device_array);
 unsigned int* cudaStartTransfer();
 void cudaEndTransfer(unsigned int* start);
 unsigned int* cudaStartPhase();
-void cudaEndPhase(unsigned int* start, int phasei=-1);
+unsigned int cudaEndPhase(unsigned int* start, int phase);
 
 #endif
