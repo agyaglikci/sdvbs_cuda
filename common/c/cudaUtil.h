@@ -39,20 +39,27 @@ inline void printSome(I2D* array)
 
 inline void compareArrays(F2D* array1, F2D* array2)
 {
-  assert(array1->height==array2->height && array1->width==array2->width);
+  //printf("comparing %dx%d 0x%x and %dx%d 0x%x\n", array1->height, array1->width, array1, array2->height, array2->width, array2);
+  if(array1->height!=array2->height || array1->width!=array2->width)
+  {
+    printf("compareArrays error: h %d!=%d or w %d!=%d\n", array1->height, array2->height, array1->width, array2->width);
+    assert(0);
+  }
   for(int y=0; y<array1->height; y++)
   {
     for(int x=0; x<array1->width; x++)
     {
       float v1 = subsref(array1,y,x);
       float v2 = subsref(array2,y,x);
-      if(v1!=v2) 
+      float diff = v1 - v2;
+      if(diff < -0.00001 || diff > 0.00001) 
       {
         printf("mismatch at %d,%d: %f != %f\n", x, y, v1, v2);
         return;
       }
     }
   }
+  printf("No mismatch\n");
 }
 
 inline void compareArrays(I2D* array1, I2D* array2)
@@ -71,16 +78,17 @@ inline void compareArrays(I2D* array1, I2D* array2)
       }
     }
   }
+  printf("No mismatch\n");
 }
 
 //transfer stuff
-F2D* fMallocCudaArray(int nrows, int ncols);
+F2D* fMallocCudaArray(int nrows, int ncols, bool set_dimensions=true);
 F2D* fMallocCudaArray(F2D* copy);
 cudaError_t fCopyToGPU(F2D* host, F2D* device);
 cudaError_t fCopyFromGPU(F2D* host, F2D* device);
 F2D* fMallocAndCopy(F2D* host_array);
 cudaError_t fCopyAndFree(F2D* host_array, F2D* device_array);
-I2D* iMallocCudaArray(int nrows, int ncols);
+I2D* iMallocCudaArray(int nrows, int ncols, bool set_dimensions=true);
 I2D* iMallocCudaArray(I2D* copy);
 cudaError_t iCopyToGPU(I2D* host, I2D* device);
 cudaError_t iCopyFromGPU(I2D* host, I2D* device);

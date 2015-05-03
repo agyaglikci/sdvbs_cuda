@@ -12,6 +12,7 @@ F2D* fMallocHandle(int rows, int cols)
     F2D* out;
    
     out = (F2D*)malloc(sizeof(F2D) + sizeof(float)*rows*cols);
+    //printf("malloc %d bytes\n", sizeof(F2D) + sizeof(float)*rows*cols);
     out->height = rows;
     out->width = cols;
     
