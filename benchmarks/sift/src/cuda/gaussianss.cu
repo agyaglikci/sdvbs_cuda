@@ -100,7 +100,6 @@ by dividing by 2^omin, getting
             cuda_imsmooth(I, temp, gss[0] );
         else
             imsmooth(I, temp, gss[0], gpu_transfer );
-        printf("0\n");
     }
 
     for(s=smin; s<smax; s++)
@@ -125,7 +124,6 @@ by dividing by 2^omin, getting
             cuda_imsmooth( gss[(s+so-1)] , dsigma, gss[(s+so)] );
         else
             imsmooth( gss[(s+so-1)] , dsigma, gss[(s+so)], gpu_transfer );
-        printf("%d\n", s + so);
     }
 
     /** Other octaves **/
@@ -168,7 +166,6 @@ by dividing by 2^omin, getting
                 cuda_imsmooth(TMP, temp, gss[o*intervals] );
             else
                 imsmooth(TMP, temp, gss[o*intervals], gpu_transfer );
-            printf("%d\n", o*intervals);
         }
         else
         {
@@ -192,7 +189,6 @@ by dividing by 2^omin, getting
                 cuda_imsmooth( gss[o*intervals+s-1+so] , dsigma, gss[o*intervals+s+so]);
             else
                 imsmooth( gss[o*intervals+s-1+so] , dsigma, gss[o*intervals+s+so], gpu_transfer);
-            printf("%d\n", o*intervals + s + so);
         }
     }
 
@@ -202,6 +198,5 @@ by dividing by 2^omin, getting
     {
         size += (gss[i]->height * gss[i]->width * sizeof(float)) + sizeof(F2D);
     }
-    printf("%f\n", size);
     return gss;
 }

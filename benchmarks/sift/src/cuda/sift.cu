@@ -111,18 +111,18 @@ F2D* sift(F2D* I, int use_gpu, int gpu_transfer)
 
     unsigned int* startTime, *endTime, *elapsed;
 
-    startTime = photonStartTiming();
+    // startTime = photonStartTiming();
 
     /** Normalize the input image to lie between 0-1 **/
     normalizeImage(I);
 
-    endTime = photonEndTiming();
-    elapsed = photonReportTiming(startTime, endTime);
-    printf("noramlizeImage\n");
-    photonPrintTiming(elapsed);
-    free(startTime);
-    free(endTime);
-    free(elapsed);
+    // endTime = photonEndTiming();
+    // elapsed = photonReportTiming(startTime, endTime);
+    // printf("noramlizeImage\n");
+    // photonPrintTiming(elapsed);
+    // free(startTime);
+    // free(endTime);
+    // free(elapsed);
 
     /**
         We build gaussian pyramid for the input image. Given image I,
@@ -141,16 +141,17 @@ F2D* sift(F2D* I, int use_gpu, int gpu_transfer)
 
         gss holds the entire gaussian pyramid.
     **/
-    startTime = photonStartTiming();
 
+    // startTime = photonStartTiming();
     gss = gaussianss(I, sigman, Octaves, subLevels, omin, -1, subLevels+1, sigma0, use_gpu, gpu_transfer);
-    endTime = photonEndTiming();
-    elapsed = photonReportTiming(startTime, endTime);
-    printf("gaussianss\n");
-    photonPrintTiming(elapsed);
-    free(startTime);
-    free(endTime);
-    free(elapsed);
+    // endTime = photonEndTiming();
+    // elapsed = photonReportTiming(startTime, endTime);
+    // printf("gaussianss\n");
+    // photonPrintTiming(elapsed);
+    // free(startTime);
+    // free(endTime);
+    // free(elapsed);
+
     /**
         Once we build the gaussian pyramid, we compute DOG, the
         Difference of Gaussians. At every scale, we do:
@@ -162,18 +163,18 @@ F2D* sift(F2D* I, int use_gpu, int gpu_transfer)
         inspect DOG images at highest and lowest scales of the octave, for
         extrema detection.
     **/
-    startTime = photonStartTiming();
+    // startTime = photonStartTiming();
 
-    dogss = diffss(gss, Octaves, intervals);
-    endTime = photonEndTiming();
-    elapsed = photonReportTiming(startTime, endTime);
-    printf("diffss\n");
-    photonPrintTiming(elapsed);
-    free(startTime);
-    free(endTime);
-    free(elapsed);
+    dogss = diffss(gss, Octaves, intervals, gpu_transfer, use_gpu);
+    // endTime = photonEndTiming();
+    // elapsed = photonReportTiming(startTime, endTime);
+    // printf("diffss\n");
+    // photonPrintTiming(elapsed);
+    // free(startTime);
+    // free(endTime);
+    // free(elapsed);
     /** The extraction of keypoints is carried one octave per time **/
-    startTime = photonStartTiming();
+    // startTime = photonStartTiming();
 
     for(o=0; o<Octaves; o++)
     {
@@ -340,13 +341,13 @@ F2D* sift(F2D* I, int use_gpu, int gpu_transfer)
         fFreeHandle(t);
         fFreeHandle(negate);
     }
-    endTime = photonEndTiming();
-    elapsed = photonReportTiming(startTime, endTime);
-    printf("extraction\n");
-    photonPrintTiming(elapsed);
-    free(startTime);
-    free(endTime);
-    free(elapsed);
+    // endTime = photonEndTiming();
+    // elapsed = photonReportTiming(startTime, endTime);
+    // printf("extraction\n");
+    // photonPrintTiming(elapsed);
+    // free(startTime);
+    // free(endTime);
+    // free(elapsed);
 
     { int s;
     for(o=0; o<Octaves; o++)
