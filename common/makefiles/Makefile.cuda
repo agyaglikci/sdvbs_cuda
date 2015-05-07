@@ -37,7 +37,7 @@ cuda-run: cuda-compile
 	@echo -e "Data set\t\t- $(INPUT)" 
 	@echo -e "CUDA GPU exec"
 #	last two inputs must be 'use_gpu' and 'transfer_gpu'
-	@./$(BMARK)$(EXE) $(DATA_DIR) $(CUDA_RESULT) 1 1 | tee $(TIMING_DIR)/cuda_gpu_$(INPUT).txt
+	./$(BMARK)$(EXE) $(DATA_DIR) $(CUDA_RESULT) 1 1 #| tee $(TIMING_DIR)/cuda_gpu_$(INPUT).txt
 #	cat $(TIMING_DIR)/cuda_gpu_$(INPUT).txt
 
 cuda-cpu-run: cuda-compile
@@ -62,7 +62,8 @@ cuda-cpu-transfer-run: cuda-compile
 
 NVCC := $(CUDA_DIR)/bin/nvcc
 CUDA_INCLUDE := $(CUDA_DIR)/include
-DEBUG_FLAG := -DDEBUG
+#DEBUG_FLAG := -DDEBUG
+DEBUG_FLAG :=
 
 NVCCFLAGS += -arch=sm_20
 

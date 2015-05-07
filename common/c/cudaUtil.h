@@ -21,66 +21,6 @@ inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort=t
    }
 }
 
-inline void printSome(F2D* array)
-{
-  for(int i=0; i<10; i++) {
-    printf("%f, ", asubsref(array, i));
-  }
-  printf("\n");
-}
-
-inline void printSome(I2D* array) 
-{
-  for(int i=0; i<10; i++) {
-    printf("%d, ", asubsref(array, i));
-  }
-  printf("\n");
-}
-
-inline void compareArrays(F2D* array1, F2D* array2)
-{
-  //printf("comparing %dx%d 0x%x and %dx%d 0x%x\n", array1->height, array1->width, array1, array2->height, array2->width, array2);
-  if(array1->height!=array2->height || array1->width!=array2->width)
-  {
-    printf("compareArrays error: h %d!=%d or w %d!=%d\n", array1->height, array2->height, array1->width, array2->width);
-    assert(0);
-  }
-  for(int y=0; y<array1->height; y++)
-  {
-    for(int x=0; x<array1->width; x++)
-    {
-      float v1 = subsref(array1,y,x);
-      float v2 = subsref(array2,y,x);
-      float diff = v1 - v2;
-      if(diff < -0.00001 || diff > 0.00001) 
-      {
-        printf("mismatch at %d,%d: %f != %f\n", x, y, v1, v2);
-        return;
-      }
-    }
-  }
-  printf("No mismatch\n");
-}
-
-inline void compareArrays(I2D* array1, I2D* array2)
-{
-  assert(array1->height==array2->height && array1->width==array2->width);
-  for(int y=0; y<array1->height; y++)
-  {
-    for(int x=0; x<array1->width; x++)
-    {
-      int v1 = subsref(array1,y,x);
-      int v2 = subsref(array2,y,x);
-      if(v1!=v2) 
-      {
-        printf("mismatch at %d,%d: %d != %d\n", x, y, v1, v2);
-        return;
-      }
-    }
-  }
-  printf("No mismatch\n");
-}
-
 //transfer stuff
 F2D* fMallocCudaArray(int nrows, int ncols, bool set_dimensions=true);
 F2D* fMallocCudaArray(F2D* copy);
@@ -99,6 +39,19 @@ cudaError_t iCopyAndFree(I2D* host_array, I2D* device_array);
 unsigned int* cudaStartTransfer();
 void cudaEndTransfer(unsigned int* start);
 unsigned int* cudaStartPhase();
-void cudaEndPhase(unsigned int* start, int phasei=-1);
+void cudaEndPhase(unsigned int* start, int phasei=-1, bool is_compute=true, bool free_start=true);
 
+
+//print stuff, other stuff
+
+void printSome(F2D* array);
+
+void printSome(I2D* array) ;
+
+void printSomeCuda(F2D* array, int rows, int cols) ;
+
+void compareArrays(F2D* array1, F2D* array2);
+void compareArraysCuda(F2D* array1, F2D* array2);
+
+void compareArrays(I2D* array1, I2D* array2);
 #endif
