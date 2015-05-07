@@ -21,6 +21,7 @@ inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort=t
 
 I2D* getDisparity(I2D* Ileft, I2D* Iright, int win_sz, int max_shift, int use_gpu, int gpu_transfer)
 {
+    unsigned int* start_all = cudaStartPhase();
     unsigned int* start_transfer = cudaStartPhase();
     I2D* retDisp;
     int nr, nc, k;
@@ -62,7 +63,7 @@ I2D* getDisparity(I2D* Ileft, I2D* Iright, int win_sz, int max_shift, int use_gp
       Iright_moved = iSetArray(rows, cols, 0);
     }
 
-    int phasei=0;
+    int phasei=1;
     if(gpu_transfer) 
     {
       d_IleftPadded = iMallocAndCopy(IleftPadded);
@@ -81,7 +82,7 @@ I2D* getDisparity(I2D* Ileft, I2D* Iright, int win_sz, int max_shift, int use_gp
       //d_retDisp = iMallocCudaArray(nr, nc);
       GPUERRCHK;
     }
-    cudaEndPhase(start_transfer, phasei++);
+    cudaEndPhase(start_transfer, phasei++, false);
 
     start_transfer = cudaStartPhase();
     for( k=0; k<max_shift; k++)
@@ -128,7 +129,7 @@ I2D* getDisparity(I2D* Ileft, I2D* Iright, int win_sz, int max_shift, int use_gp
         //printf("it%d\n", k);
         
     }
-    cudaEndPhase(start_transfer, phasei++);
+    cudaEndPhase(start_transfer, phasei++, true);
     start_transfer = cudaStartPhase();
 //#ifdef DEBUG
 //    printf("retDisp:\n");
@@ -162,7 +163,8 @@ I2D* getDisparity(I2D* Ileft, I2D* Iright, int win_sz, int max_shift, int use_gp
       }
       GPUERRCHK;
     }
-    cudaEndPhase(start_transfer, phasei++);
+    cudaEndPhase(start_transfer, phasei++, false);
+    cudaEndPhase(start_all, 0);
     return retDisp;
 }
 

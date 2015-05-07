@@ -50,14 +50,21 @@ F2D* calcAreaSum(F2D* src, int cols, int rows, int winSize)
         a1sum = 0;
         for(k=0; k<nave; k++) {
             a1sum += asubsref(a1,k);
+            //float to_add = (k-nave_half < 0) ? 0 : subsref(src,i,k-nave_half);
+            //a1sum += to_add;
 		}
         for(j=0; j<cols; j++)
         {
             subsref(ret,i,j) = a1sum;
             a1sum += asubsref(a1,j+nave) - asubsref(a1,j);
+            //float to_add = (j+nave-nave_half >= cols ? 0 : subsref(src,i,j+nave-nave_half));
+            //float to_sub = (j-nave_half < 0 ? 0 : subsref(src,i,j-nave_half));
+            //a1sum += to_add - to_sub;
         }
     }
     fFreeHandle(a1);
+    //printf("print ret\n");
+    //printSome(ret);
 
     a1 = fSetArray(1, rows+nave,0);
     for(i=0; i<cols; i++)

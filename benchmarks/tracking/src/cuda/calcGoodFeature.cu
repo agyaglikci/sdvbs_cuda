@@ -24,8 +24,12 @@ Author: Sravanthi Kota Venkata
 
 **/
 
-F2D* calcGoodFeature(F2D* verticalEdgeImage, F2D* horizontalEdgeImage, int cols, int rows, int winSize)
+F2D* calcGoodFeature(F2D* verticalEdgeImage, F2D* horizontalEdgeImage, int cols, int rows, int winSize, F2D** compare_array)
 {
+    unsigned int* timer;
+    int phasei = 1;
+    timer = cudaStartPhase();
+
     int i, j, k, ind;
     F2D *verticalEdgeSq, *horizontalEdgeSq, *horzVertEdge;
     F2D *tr, *det, *lambda;
@@ -35,6 +39,14 @@ F2D* calcGoodFeature(F2D* verticalEdgeImage, F2D* horizontalEdgeImage, int cols,
     horzVertEdge = fMallocHandle(rows, cols);
     horizontalEdgeSq = fMallocHandle(rows, cols);
     
+    tr = fMallocHandle(rows, cols);
+    det = fMallocHandle(rows, cols);
+    lambda = fMallocHandle(rows, cols);
+
+    cudaEndPhase(timer, phasei++, false);
+    //printf("calcGoodFeature alloc cpu\n");
+    timer = cudaStartPhase();
+
     for( i=0; i<rows; i++)
     {
         for( j=0; j<cols; j++)
@@ -46,12 +58,11 @@ F2D* calcGoodFeature(F2D* verticalEdgeImage, F2D* horizontalEdgeImage, int cols,
     }
     
     cummulative_verticalEdgeSq = calcAreaSum(verticalEdgeSq, cols, rows, winSize); 
+    //printf("printing cpu cummVertical\n");
+    //printSome(cummulative_verticalEdgeSq);
     cummulative_horzVertEdge = calcAreaSum(horzVertEdge, cols, rows, winSize);
     cummulative_horizontalEdgeSq = calcAreaSum(horizontalEdgeSq, cols, rows, winSize);    
      
-    tr = fMallocHandle(rows, cols);
-    det = fMallocHandle(rows, cols);
-    lambda = fMallocHandle(rows, cols);
     
     for( i=0; i<rows; i++)
     {
@@ -62,6 +73,10 @@ F2D* calcGoodFeature(F2D* verticalEdgeImage, F2D* horizontalEdgeImage, int cols,
             subsref(lambda,i,j) = ( subsref(det,i,j) / (subsref(tr,i,j)+0.00001) ) ;
         }
     }
+
+    cudaEndPhase(timer, phasei++, true);
+    //printf("calcGoodFeature compute cpu\n");
+    timer = cudaStartPhase();
    
     fFreeHandle(verticalEdgeSq);
     fFreeHandle(horzVertEdge);
@@ -73,6 +88,10 @@ F2D* calcGoodFeature(F2D* verticalEdgeImage, F2D* horizontalEdgeImage, int cols,
     
     fFreeHandle(tr);
     fFreeHandle(det);
+    
+    //*compare_array = cummulative_verticalEdgeSq;
      
+    cudaEndPhase(timer, phasei++, false);
+    //printf("calcGoodFeature free cpu\n");
     return lambda;
 }
