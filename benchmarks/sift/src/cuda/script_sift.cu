@@ -5,6 +5,7 @@ Author: Sravanthi Kota Venkata
 #include <stdio.h>
 #include <stdlib.h>
 #include "sift.h"
+#include "cudaUtil.h"
 
 bool use_gpu;
 bool gpu_transfer;
@@ -15,7 +16,7 @@ int main(int argc, char* argv[])
     F2D *image;
     int rows, cols;
     F2D* frames;
-    unsigned int* startTime, *endTime, *elapsed;
+    unsigned int* startTime;
 
     char imSrc[100];
 
@@ -38,11 +39,12 @@ int main(int argc, char* argv[])
     rows = image->height;
     cols = image->width;
 
-    startTime = photonStartTiming();
-
-    /** Extract sift features for the normalized image **/
+    struct timespec start, end;
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start);
     frames = sift(image, use_gpu, gpu_transfer);
-    endTime = photonEndTiming();
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end);
+    printf("\nSift total\n");
+    printf("Clock cycles: %llu\n", (long long unsigned int) 1000000000L * (end.tv_sec - start.tv_sec) + end.tv_nsec - start.tv_nsec);
 
     printf("Input size\t\t- (%dx%d)\n", rows, cols);
 
@@ -58,13 +60,6 @@ int main(int argc, char* argv[])
             printf("Error in SIFT\n");
     }
 #endif
-
-    elapsed = photonReportTiming(startTime, endTime);
-    photonPrintTiming(elapsed);
-
-    free(startTime);
-    free(endTime);
-    free(elapsed);
 
     fFreeHandle(frames);
 

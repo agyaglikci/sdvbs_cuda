@@ -36,7 +36,8 @@ F2D** diffss(F2D** ss, int num, int intervals, int gpu_transfer, int use_gpu)
             in2 = ss[o*intervals+s];
 
             F2D * d_in1, * d_in2, * d_out;
-
+            gpu_transfer = 0;
+            use_gpu = 0;
             if (gpu_transfer)
             {
                 d_in1 = fMallocAndCopy(in1);

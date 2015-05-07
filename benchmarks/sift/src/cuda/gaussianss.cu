@@ -193,10 +193,6 @@ by dividing by 2^omin, getting
     }
 
     fFreeHandle(I);
-    float size = O*intervals*sizeof(F2D*);
-    for (int i = 0; i < O*intervals; i++)
-    {
-        size += (gss[i]->height * gss[i]->width * sizeof(float)) + sizeof(F2D);
-    }
+
     return gss;
 }
