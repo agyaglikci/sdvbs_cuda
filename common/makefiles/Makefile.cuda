@@ -73,7 +73,7 @@ CUDA_OBJS := $(COMMON_SRC:.c=.o) $(COMMON_CU_SRC:.cu=.cu.o) $(CUDA_C_SRC:.c=.o) 
 #run gpu cuda version of benchmark
 cuda-compile: $(CUDA_OBJS)
 	@echo -e "CUDA Benchmark\t\t- $(BMARK)"
-	@$(NVCC) $(CFLAGS) $(DEBUG_FLAG) $(NVCCFLAGS) $(CUDA_OBJS) -o $(BMARK)$(EXE) -L$(CUDA_LIB_DIR)
+	@$(NVCC) $(CFLAGS) $(DEBUG_FLAG) $(NVCCFLAGS) $(CUDA_OBJS) -o $(BMARK)$(EXE) -L$(CUDA_LIB_DIR) -lm
 #	$(CC) $(CFLAGS) $(CUDA_OBJS) -o $(BMARK)$(EXE) -L$(CUDA_LIB_DIR)
 
 

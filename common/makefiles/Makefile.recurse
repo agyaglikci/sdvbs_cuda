@@ -1,5 +1,5 @@
 # This file is included in the makefiles of the non-leaf nodes
-# Thus the various targets in this file have to trickle down 
+# Thus the various targets in this file have to trickle down
 # into the subdirectories
 # List the subdirectories and call the target for each one of them
 
@@ -24,6 +24,8 @@ c-run: recurse
 matlab-run: recurse
 
 mcc-run: recurse
+
+cudall: recurse
 
 recurse: $(RECURSE-DEPENDS)
 
