@@ -62,7 +62,7 @@ F2D** gaussianss(F2D* array, float sigman, int O, int S, int omin, int smin, int
     M = I->height;
     N = I->width;
     so = -smin+1;       // Index offset
-
+    unsigned long long int total = 0, gpuTime = 0;
     gss = (F2D**) malloc(O*intervals*sizeof(F2D*));
     if(gss == NULL)
     {
@@ -96,11 +96,12 @@ by dividing by 2^omin, getting
 
     {
         gss[0] = fSetArray(I->height, I->width, 0);
-        if(use_gpu)
-            cuda_imsmooth(I, temp, gss[0] );
+        if(use_gpu);
+            //total += cuda_imsmooth(I, temp, gss[0], &gpuTime );
         else
             imsmooth(I, temp, gss[0], gpu_transfer );
     }
+    //printf("0 I\n");
 
     for(s=smin; s<smax; s++)
     {
@@ -120,10 +121,11 @@ by dividing by 2^omin, getting
 
         dsigma = pow(k,s+1) * dsigma0;
         gss[s+so] = fSetArray(gss[s+so-1]->height, gss[s+so-1]->width, 0);
-        if (use_gpu)
-            cuda_imsmooth( gss[(s+so-1)] , dsigma, gss[(s+so)] );
+        if (use_gpu);
+            //total += cuda_imsmooth( gss[(s+so-1)] , dsigma, gss[(s+so)], &gpuTime );
         else
             imsmooth( gss[(s+so-1)] , dsigma, gss[(s+so)], gpu_transfer );
+       // printf("%d %d\n",s+so, s+so-1 );
     }
 
     /** Other octaves **/
@@ -159,11 +161,12 @@ by dividing by 2^omin, getting
         prev_sigma = sigma0 * pow(k, (sbest+1)-S);
 
         temp = sqrt(pow(target_sigma,2) - pow(prev_sigma, 2));
+       // printf("%d %d\n",o*intervals, (o-1)*intervals+sbest+so);
         if(target_sigma > prev_sigma)
         {
             gss[o*intervals] = fSetArray(TMP->height, TMP->width, 0);
-            if (use_gpu)
-                cuda_imsmooth(TMP, temp, gss[o*intervals] );
+            if (use_gpu);
+                //total += cuda_imsmooth(TMP, temp, gss[o*intervals], &gpuTime );
             else
                 imsmooth(TMP, temp, gss[o*intervals], gpu_transfer );
         }
@@ -184,14 +187,17 @@ by dividing by 2^omin, getting
         {
 		    // The other levels are determined as above for the first octave.
             dsigma = pow(k,s+1) * dsigma0;
+            //printf("%d %d\n",o*intervals+s+so, o*intervals+s+so-1);
             gss[o*intervals+s+so] = fSetArray(gss[o*intervals+s-1+so]->height, gss[o*intervals+s-1+so]->width, 0);
-            if (use_gpu)
-                cuda_imsmooth( gss[o*intervals+s-1+so] , dsigma, gss[o*intervals+s+so]);
+            if (use_gpu);
+                //total += cuda_imsmooth( gss[o*intervals+s-1+so] , dsigma, gss[o*intervals+s+so], &gpuTime);
             else
                 imsmooth( gss[o*intervals+s-1+so] , dsigma, gss[o*intervals+s+so], gpu_transfer);
         }
     }
 
+    printf("Time allocating/transfering: %llu\n", total);
+    printf("Gpu time: %llu\n", gpuTime);
     fFreeHandle(I);
 
     return gss;

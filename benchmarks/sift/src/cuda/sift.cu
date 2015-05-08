@@ -60,6 +60,7 @@ void normalizeImage(F2D* image)
 
 F2D* sift(F2D* I, int use_gpu, int gpu_transfer)
 {
+    printf("%s: %d\n", __FILE__, __LINE__);
     int rows, cols;
     int subLevels, omin, Octaves, r, smin, smax, intervals, o;
     float sigman, sigma0, thresh;
@@ -136,7 +137,22 @@ F2D* sift(F2D* I, int use_gpu, int gpu_transfer)
     //struct timeval start1, end1;
     //gettimeofday(&start1, NULL);
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start);
-    gss = gaussianss(I, sigman, Octaves, subLevels, omin, -1, subLevels+1, sigma0, use_gpu, gpu_transfer);
+    printf("%s: %d\n", __FILE__, __LINE__);
+    if (use_gpu)
+    {
+        gss = cuda_gaussianss(I, sigman, Octaves, subLevels, omin, smin, smax, sigma0);
+        dogss = gss;
+        //dogss = diffss(gss, Octaves, intervals, gpu_transfer, 0);
+
+    }
+    else
+    {
+        gss = gaussianss(I, sigman, Octaves, subLevels, omin, -1, subLevels+1, sigma0, use_gpu, gpu_transfer);
+        dogss = diffss(gss, Octaves, intervals, gpu_transfer, 0);
+    }
+
+
+    //printf("%s: %d\n", __FILE__, __LINE__);
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end);
     //gettimeofday(&end1, NULL);
 
@@ -158,7 +174,6 @@ F2D* sift(F2D* I, int use_gpu, int gpu_transfer)
         extrema detection.
     **/
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start);
-    dogss = diffss(gss, Octaves, intervals, gpu_transfer, use_gpu);
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end);
     printf("diffs\n");
     printf("Clock cycles: %llu\n", (long long unsigned int) 1000000000L * (end.tv_sec - start.tv_sec) + end.tv_nsec - start.tv_nsec);
@@ -175,6 +190,7 @@ F2D* sift(F2D* I, int use_gpu, int gpu_transfer)
         I2D *x, *y;
         int sizeRows = dogss[o*intervals]->height;
         int sizeCols = dogss[o*intervals]->width;
+        struct timespec start1, end1;
 
         {
             int i,j,k=0;
@@ -223,6 +239,7 @@ F2D* sift(F2D* I, int use_gpu, int gpu_transfer)
 
         idx = ifDeepCopy(idxft);
 
+
         x = iSetArray(idx->height,idx->width,0);
         y = iSetArray(idx->height,idx->width,0);
         s_ = iSetArray(idx->height,idx->width,0);
@@ -252,18 +269,17 @@ F2D* sift(F2D* I, int use_gpu, int gpu_transfer)
         {
 
             tx1 = isMinus(x, 1);
-            x1 = iReshape(tx1, 1, (tx1->height*tx1->width));
-
             ty1 = isMinus(y, 1);
-            y1 = iReshape(ty1, 1, (ty1->height*ty1->width));
-
             ts1 = isPlus(s_, (smin-1));
+
+            x1 = iReshape(tx1, 1, (tx1->height*tx1->width));
+            y1 = iReshape(ty1, 1, (ty1->height*ty1->width));
             s1 = iReshape(ts1, 1, (ts1->height*ts1->width));
 
             txys = iVertcat(y1, x1);
             i_ = iVertcat(txys, s1);
-        }
 
+        }
         /**
             Stack all x,y,s into oframes.
             Row 0 of oframes = x
@@ -335,13 +351,19 @@ F2D* sift(F2D* I, int use_gpu, int gpu_transfer)
 
 
     { int s;
-    for(o=0; o<Octaves; o++)
+    if (use_gpu == 0)
     {
-        for(s=0; s<(intervals-1); s++)
+        for(o=0; o<Octaves; o++)
         {
-            fFreeHandle(dogss[o*intervals+s]);
+            for(s=0; s<(intervals-1); s++)
+            {
+                fFreeHandle(dogss[o*intervals+s]);
+            }
         }
+        free(dogss);
     }
+
+
     for(o=0; o<Octaves; o++)
     {
         for(s=0; s<(intervals); s++)
@@ -351,7 +373,6 @@ F2D* sift(F2D* I, int use_gpu, int gpu_transfer)
     }
     }
     free(gss);
-    free(dogss);
 
     return frames;
 }

@@ -25,10 +25,10 @@ int main(int argc, char* argv[])
         printf("We need input image path\n");
         return -1;
     }
-
     sprintf(imSrc, "%s/1.bmp", argv[1]);
 
     /*** ADD THIS TO EXISTING BENCHMARKS *****/
+    printf("%s: %d\n", __FILE__, __LINE__);
     use_gpu = atoi(argv[3]);
     gpu_transfer = atoi(argv[4]);
     /*****************************************/
@@ -38,6 +38,7 @@ int main(int argc, char* argv[])
     iFreeHandle(im);
     rows = image->height;
     cols = image->width;
+    printf("%s: %d\n", __FILE__, __LINE__);
 
     struct timespec start, end;
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start);
