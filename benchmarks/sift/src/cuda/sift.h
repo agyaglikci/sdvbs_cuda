@@ -27,7 +27,8 @@ F2D* filterBoundaryPoints(int M, int N, F2D* oframes);
 F2D* siftrefinemx(F2D* oframes, F2D* dogss, int smin, float thresh, int rin, int M, int N, int intervals);
 
 
-void cuda_imsmooth(F2D* array, float dsigma, F2D* out);
+void cuda_imsmooth(F2D* array, float dsigma, F2D* out, float * d_filt, int width, int height);
 F2D** cuda_gaussianss(F2D* array, float sigman, int O, int S, int omin, int smin, int smax, float sigma0);
+F2D** cuda_diffss(F2D** ss, int num, int intervals);
 
 #endif

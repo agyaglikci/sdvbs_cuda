@@ -41,25 +41,25 @@ void imsmooth(F2D* array, float dsigma, F2D* out, int gpu_transfer)
 
     buffer = fSetArray(M,N,0);
 
-    if (gpu_transfer)
-    {
-          F2D * out2 = fMallocHandle(out->height, out->width);
-          int filterSize = (2*W+1) * (2*W+1);
-          float * gausFilter = (float *) malloc(sizeof(float)*filterSize);
-          F2D* d_array = fMallocAndCopy(array);
-          F2D* d_out = fMallocAndCopy(array);
-          float * d_filt;
-          cudaMalloc((void**) &d_filt, filterSize * sizeof(float));
-          cudaMemcpy(d_filt, gausFilter, filterSize * sizeof(float), cudaMemcpyHostToDevice);
+    // if (gpu_transfer)
+    // {
+    //       F2D * out2 = fMallocHandle(out->height, out->width);
+    //       int filterSize = (2*W+1) * (2*W+1);
+    //       float * gausFilter = (float *) malloc(sizeof(float)*filterSize);
+    //       F2D* d_array = fMallocAndCopy(array);
+    //       F2D* d_out = fMallocAndCopy(array);
+    //       float * d_filt;
+    //       cudaMalloc((void**) &d_filt, filterSize * sizeof(float));
+    //       cudaMemcpy(d_filt, gausFilter, filterSize * sizeof(float), cudaMemcpyHostToDevice);
 
-          fCopyFromGPU(out2, d_out);
+    //       fCopyFromGPU(out2, d_out);
 
-          free(gausFilter);
-          free(out2);
-          cudaFree(d_array);
-          cudaFree(d_out);
-          cudaFree(d_filt);
-    }
+    //       free(gausFilter);
+    //       free(out2);
+    //       cudaFree(d_array);
+    //       cudaFree(d_out);
+    //       cudaFree(d_filt);
+    // }
 
 
     for(j = 0 ; j < (2*W+1) ; ++j)
@@ -71,8 +71,10 @@ void imsmooth(F2D* array, float dsigma, F2D* out, int gpu_transfer)
     for(j = 0 ; j < (2*W+1) ; ++j)
     {
       temp[j] /= acc ;
-    }
+      //printf("%f ", temp[j]);
 
+    }
+   // printf("\n");
     /*
     ** Convolve along the columns
     **/
@@ -112,6 +114,8 @@ void imsmooth(F2D* array, float dsigma, F2D* out, int gpu_transfer)
     }
 
     fFreeHandle(buffer);
+    //printf("Serial: %f %f\n", out->data[0], out->data[10]);
+
 
 
     /*int filterSize = (2*W+1) * (2*W+1);

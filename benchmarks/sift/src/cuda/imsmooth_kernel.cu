@@ -60,7 +60,9 @@ __global__ void imsmooth_kernel(F2D* input, F2D* output, int filterSize, int inT
 __global__ void imsmoothRow_kernel (F2D* d_Result, F2D* d_Data, int radius, int tileW, float * filter, int dataW, int dataH)
 {
     extern __shared__ float data[];
-    const int gLoc = threadIdx.x + (blockIdx.x * blockDim.x) + (threadIdx.y * dataW) + (blockIdx.y * blockDim.y) * dataW;
+    const int xPos = threadIdx.x + blockIdx.x * blockDim.x;
+    const int yPos = threadIdx.y + blockIdx.y * blockDim.y;
+    const int gLoc = xPos + yPos * dataW;
 
     int x;
 
@@ -68,7 +70,7 @@ __global__ void imsmoothRow_kernel (F2D* d_Result, F2D* d_Data, int radius, int 
     const int shift = threadIdx.y * (tileW + radius * 2);
 
     x = x0 - radius;
-    if (x < 0)
+    if (x < 0 || x >= dataW)
         data[threadIdx.x + shift] = 0;
     else
         data[threadIdx.x + shift] = d_Data->data[gLoc - radius];
@@ -80,16 +82,19 @@ __global__ void imsmoothRow_kernel (F2D* d_Result, F2D* d_Data, int radius, int 
         data[threadIdx.x + 2 * radius + shift] = d_Data->data[gLoc + radius];
 
     __syncthreads();
-    float sum = 0.0f;
-    x = radius + threadIdx.x;
-    for (int i = -radius; i <= radius; i++)
-        sum += data[x + i + shift] * filter[radius + i];
-
-    d_Result->data[gLoc] = sum;
-    if (gLoc == 0)
+    if (xPos < dataW && yPos < dataH)
     {
-        d_Result->width = dataW;
-        d_Result->height = dataH;
+        float sum = 0.0f;
+        x = radius + threadIdx.x;
+        for (int i = -radius; i <= radius; i++)
+            sum += data[x + i + shift] * filter[radius + i];
+
+        d_Result->data[gLoc] = sum;
+        if (gLoc == 0)
+        {
+            d_Result->width = dataW;
+            d_Result->height = dataH;
+        }
     }
 }
 
@@ -97,7 +102,9 @@ __global__ void imsmoothCol_kernel (F2D* d_Result, F2D* d_Data, int radius, int 
 {
     extern __shared__ float data[];
 
-    const int gLoc = threadIdx.x + (blockIdx.x * blockDim.x) + (threadIdx.y * dataW) + (blockIdx.y * blockDim.y) * dataW;
+    const int xPos = threadIdx.x + blockIdx.x * blockDim.x;
+    const int yPos = threadIdx.y + blockIdx.y * blockDim.y;
+    const int gLoc = xPos + yPos * dataW;
 
     int y;
 
@@ -105,7 +112,7 @@ __global__ void imsmoothCol_kernel (F2D* d_Result, F2D* d_Data, int radius, int 
     const int shift = threadIdx.y * tileW;
 
     y = y0 - radius;
-    if (y < 0)
+    if (y < 0 || y >= dataH)
         data[threadIdx.x + shift] = 0;
     else
         data[threadIdx.x + shift] = d_Data->data[gLoc - (dataW * radius)];
@@ -118,16 +125,18 @@ __global__ void imsmoothCol_kernel (F2D* d_Result, F2D* d_Data, int radius, int 
         data[threadIdx.x + shiftl] = d_Data->data[gLoc + (dataW * radius)];
 
     __syncthreads();
-
-    float sum = 0.0f;
-    for (int i = 0; i <= radius*2; i++)
-        sum += data[threadIdx.x + (threadIdx.y + i) * tileW] * filter[i];
-
-    d_Result->data[gLoc] = sum;
-    if (gLoc == 0)
+    if (xPos < dataW && yPos < dataH)
     {
-        d_Result->width = dataW;
-        d_Result->height = dataH;
+        float sum = 0.0f;
+        for (int i = 0; i <= radius*2; i++)
+            sum += data[threadIdx.x + (threadIdx.y + i) * tileW] * filter[i];
+
+        d_Result->data[gLoc] = sum;
+        if (gLoc == 0)
+        {
+            d_Result->width = dataW;
+            d_Result->height = dataH;
+        }
     }
 
 }

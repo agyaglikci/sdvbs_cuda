@@ -60,7 +60,6 @@ void normalizeImage(F2D* image)
 
 F2D* sift(F2D* I, int use_gpu, int gpu_transfer)
 {
-    printf("%s: %d\n", __FILE__, __LINE__);
     int rows, cols;
     int subLevels, omin, Octaves, r, smin, smax, intervals, o;
     float sigman, sigma0, thresh;
@@ -133,17 +132,11 @@ F2D* sift(F2D* I, int use_gpu, int gpu_transfer)
 
         gss holds the entire gaussian pyramid.
     **/
-    struct timespec start, end;
-    //struct timeval start1, end1;
-    //gettimeofday(&start1, NULL);
-    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start);
-    printf("%s: %d\n", __FILE__, __LINE__);
+
     if (use_gpu)
     {
         gss = cuda_gaussianss(I, sigman, Octaves, subLevels, omin, smin, smax, sigma0);
         dogss = gss;
-        //dogss = diffss(gss, Octaves, intervals, gpu_transfer, 0);
-
     }
     else
     {
@@ -151,34 +144,6 @@ F2D* sift(F2D* I, int use_gpu, int gpu_transfer)
         dogss = diffss(gss, Octaves, intervals, gpu_transfer, 0);
     }
 
-
-    //printf("%s: %d\n", __FILE__, __LINE__);
-    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end);
-    //gettimeofday(&end1, NULL);
-
-
-    printf("gaussians\n");
-    printf("Clock cycles: %llu\n", (long long unsigned int) 1000000000L * (end.tv_sec - start.tv_sec) + end.tv_nsec - start.tv_nsec);
-    //printf("Clock cycles: %llu\n", (long long unsigned int) 1000000000L * (end1.tv_sec - start1.tv_sec) + 1000 * (end1.tv_usec - start1.tv_usec));
-
-
-    /**
-        Once we build the gaussian pyramid, we compute DOG, the
-        Difference of Gaussians. At every scale, we do:
-
-        dogss[fixedScale][0] = gss[fixedScale][1] - gss[fixedScale][0]
-
-        Difference of gaussian gives us edge information, at each scale.
-        In order to detect keypoints on the intervals per octave, we
-        inspect DOG images at highest and lowest scales of the octave, for
-        extrema detection.
-    **/
-    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start);
-    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end);
-    printf("diffs\n");
-    printf("Clock cycles: %llu\n", (long long unsigned int) 1000000000L * (end.tv_sec - start.tv_sec) + end.tv_nsec - start.tv_nsec);
-
-    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start);
     for(o=0; o<Octaves; o++)
     {
         F2D *temp;
@@ -345,9 +310,6 @@ F2D* sift(F2D* I, int use_gpu, int gpu_transfer)
         fFreeHandle(t);
         fFreeHandle(negate);
     }
-    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end);
-    printf("extract\n");
-    printf("Clock cycles: %llu\n", (long long unsigned int) 1000000000L * (end.tv_sec - start.tv_sec) + end.tv_nsec - start.tv_nsec);
 
 
     { int s;
