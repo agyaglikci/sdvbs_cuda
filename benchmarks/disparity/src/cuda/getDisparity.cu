@@ -68,18 +68,19 @@ I2D* getDisparity(I2D* Ileft, I2D* Iright, int win_sz, int max_shift, int use_gp
     {
       d_IleftPadded = iMallocAndCopy(IleftPadded);
       d_IrightPadded = iMallocAndCopy(IrightPadded);
-      d_Iright_moved = iMallocAndCopy(Iright_moved);
-      d_SAD = fMallocAndCopy(SAD);
-      d_integralImg = fMallocAndCopy(integralImg);
-      d_retSAD = fMallocAndCopy(retSAD);
-      d_minSAD = fMallocAndCopy(minSAD);
-      d_retDisp = iMallocAndCopy(retDisp);
-      //d_Iright_moved = iMallocCudaArray(rows, cols);
-      //d_SAD = fMallocCudaArray(rows, cols);
-      //d_integralImg = fMallocCudaArray(rows, cols);
-      //d_retSAD = fMallocCudaArray(nr, nc);
-      //d_minSAD = fMallocCudaArray(nr, nc);
-      //d_retDisp = iMallocCudaArray(nr, nc);
+      //d_Iright_moved = iMallocAndCopy(Iright_moved);
+      //d_SAD = fMallocAndCopy(SAD);
+      //d_integralImg = fMallocAndCopy(integralImg);
+      //d_retSAD = fMallocAndCopy(retSAD);
+      //d_minSAD = fMallocAndCopy(minSAD);
+      //d_retDisp = iMallocAndCopy(retDisp);
+
+      d_Iright_moved = iMallocCudaArray(rows, cols);
+      d_SAD = fMallocCudaArray(rows, cols);
+      d_integralImg = fMallocCudaArray(rows, cols);
+      d_retSAD = fMallocCudaArray(nr, nc);
+      d_minSAD = fMallocCudaArray(nr, nc);
+      d_retDisp = iMallocCudaArray(nr, nc);
       GPUERRCHK;
     }
     cudaEndPhase(start_transfer, phasei++, false);
